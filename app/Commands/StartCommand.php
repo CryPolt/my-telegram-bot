@@ -50,7 +50,8 @@ class StartCommand extends Command{
     public function sendAnswerForOldUsers(): void
     {
         $this->replyWithMessage([
-            'text' => 'Рады видеть вас снова!🥳'
+            'text' => 'Рады видеть вас снова!🥳 Ссылка на Сайт https://10a6-37-99-36-126.ngrok-free.app/'
+
         ]);
     }
     public function sendAnswerForNewUsers()
@@ -58,6 +59,7 @@ class StartCommand extends Command{
         $this->replyWithMessage([
             'text' => 'Добро пожаловать в наш телеграм бот!'
         ]);
+
     }
 
 
