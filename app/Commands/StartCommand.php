@@ -20,7 +20,8 @@ class StartCommand extends Command{
     }
 
 
-    public function handle(){
+    public function handle(): void
+    {
         //Получаем всю информацию о пользователе
         $userData = $this->getUpdate()->message->from;
         //Получаем его уникальный ID
@@ -36,8 +37,37 @@ class StartCommand extends Command{
             $this->addNewTelegramUser($userData);
             $this->sendAnswerForNewUsers();
         }
+        $message = $this->getUpdate()->message;
+        if ($message->isCommand()) {
+            $this->handleCommand($message->text);
+        }else{
+            $this->replyWithMessage([
+               '' => 'Команда не найдена',
+            ]);
+        }
     }
 
+    public function handleCommand(string $command): void
+    {
+        switch ($command) {
+            case '/start':
+                // Логика для команды /start
+                break;
+            case '/help':
+                // Логика для команды /help
+                break;
+            case '/user':
+                // Логика для команды /user
+                break;
+            // Добавьте обработку других команд
+            default:
+                // Отправляем сообщение о том, что команда не найдена
+                $this->replyWithMessage([
+                    '' => 'Команда не найдена',
+                ]);
+                break;
+        }
+    }
     public function addNewTelegramUser(User $userData){
         $this->telegramUser->insert([
             'user_id' => $userData->id,
@@ -50,6 +80,7 @@ class StartCommand extends Command{
         ]);
 
     }
+
 
     public function sendAnswerForOldUsers(): void
     {
