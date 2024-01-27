@@ -4,12 +4,15 @@ namespace App\Commands;
 
 use App\Models\TelegramUser;
 use Telegram\bot\Commands\Command;
+use Telegram\Bot\Keyboard\Keyboard;
+use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Objects\User;
 
 class StartCommand extends Command{
     protected string $name ='start';
     protected string $description = 'Запуск / Перезапуск бота';
     protected TelegramUser $telegramUser;
+
 
     public function __construct(TelegramUser $telegramUser)
     {
@@ -28,6 +31,7 @@ class StartCommand extends Command{
         //Иначе добавляем его в бд и отправялем сообщение как новому
         if ($telegramUser) {
             $this->sendAnswerForOldUsers();
+            $this->keyboard();
         } else {
             $this->addNewTelegramUser($userData);
             $this->sendAnswerForNewUsers();
@@ -47,20 +51,49 @@ class StartCommand extends Command{
 
     }
 
-    public function sendAnswerForOldUsers()
+    public function sendAnswerForOldUsers(): void
     {
+        $userData = $this->getUpdate()->message->from;
+        $userId = $userData->id;
+        $telegramUser = $this->telegramUser->where('user_id', '=', $userId)->first();
         $this->replyWithMessage([
-            'text' => 'Рады видеть вас снова!🥳'
-        ]);
-    }
-    public function sendAnswerForNewUsers()
-    {
-        $this->replyWithMessage([
-            'text' => 'Добро пожаловать в наш телеграм бот!'
+            'text' => "Привет {$telegramUser->username}"
         ]);
     }
 
 
+    public function sendAnswerForNewUsers(): void
+    {
+        $userData = $this->getUpdate()->message->from;
+        $userId = $userData->id;
+        $telegramUser = $this->telegramUser->where('user_id', '=', $userId)->first();
+        $this->replyWithMessage([
+            'text' => "Привет {$telegramUser->username}"
+        ]);
+
+    }
 
 
+    public function keyboard(): void
+    {
+
+        if ($this->getUpdate()->message->from->language_code == "en") {
+            $this->replyWithMessage([
+                'text' => 'Выбери действие',
+                'reply_markup' => Keyboard::make()
+                    ->inline()->row(array(
+                        Keyboard::inlineButton(['text' => 'Перейти на  сайт', 'url' => 'https://bold-amoeba-honest.ngrok-free.app/']),
+                        Keyboard::inlineButton(['text' => '/user', 'callback_data' => 'user']),
+                    ))]);
+        } else {
+            $this->replyWithMessage([
+                'text' => 'Выбери действие',
+                'reply_markup' => Keyboard::make()
+                    ->inline()->row(array(
+                        Keyboard::inlineButton(['text' => 'Перейти ', 'url' => 'https://bold-amoeba-honest.ngrok-free.app/hook']),
+                        Keyboard::inlineButton(['text' => 'ds', 'callback_data' => 'user']),
+                    ))]);
+        }
+
+    }
 }

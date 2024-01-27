@@ -37,6 +37,7 @@ return [
             'webhook_url' => env('TELEGRAM_WEBHOOK_URL', 'YOUR-BOT-WEBHOOK-URL'),
             'commands' => [
                 \App\Commands\StartCommand::class,
+                \App\Commands\UserCommand::class,
                 //Acme\Project\Commands\MyTelegramBot\BotCommand::class
             ],
         ],
